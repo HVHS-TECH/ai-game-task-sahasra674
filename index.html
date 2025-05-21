@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Snake Game</title>
+  <title>Endless Snake Game</title>
   <style>
     body {
       background: black;
@@ -19,7 +19,7 @@
   </style>
 </head>
 <body>
-  <h1>🐍 Snake Game</h1>
+  <h1>🐍 Endless Snake Game</h1>
   <canvas id="game" width="400" height="400"></canvas>
   <p>Use the arrow keys to move</p>
   <p id="score">Score: 0</p>
@@ -29,18 +29,23 @@
     const ctx = canvas.getContext("2d");
 
     const box = 20;
-    let snake = [
-      { x: 160, y: 200 },
-      { x: 140, y: 200 },
-      { x: 120, y: 200 }
-    ];
+    let score = 0;
+    let direction = "RIGHT";
+
+    function createSnake() {
+      return [
+        { x: 160, y: 200 },
+        { x: 140, y: 200 },
+        { x: 120, y: 200 }
+      ];
+    }
+
+    let snake = createSnake();
+
     let food = {
       x: Math.floor(Math.random() * (canvas.width / box)) * box,
       y: Math.floor(Math.random() * (canvas.height / box)) * box
     };
-    let direction = "RIGHT";
-    let score = 0;
-    let gameOver = false;
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
@@ -50,8 +55,6 @@
     });
 
     function draw() {
-      if (gameOver) return;
-
       ctx.fillStyle = "#111";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -71,47 +74,4 @@
       if (direction === "LEFT") head.x -= box;
       if (direction === "RIGHT") head.x += box;
       if (direction === "UP") head.y -= box;
-      if (direction === "DOWN") head.y += box;
-
-      // Check wall collision
       if (
-        head.x < 0 || head.x >= canvas.width ||
-        head.y < 0 || head.y >= canvas.height
-      ) {
-        endGame();
-        return;
-      }
-
-      // Check self collision
-      for (let i = 0; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
-          endGame();
-          return;
-        }
-      }
-
-      snake.unshift(head);
-
-      // Check if food is eaten
-      if (head.x === food.x && head.y === food.y) {
-        score++;
-        document.getElementById("score").innerText = "Score: " + score;
-        food = {
-          x: Math.floor(Math.random() * (canvas.width / box)) * box,
-          y: Math.floor(Math.random() * (canvas.height / box)) * box
-        };
-      } else {
-        snake.pop();
-      }
-    }
-
-    function endGame() {
-      gameOver = true;
-      alert("Game Over! Final Score: " + score);
-      location.reload();
-    }
-
-    setInterval(draw, 150);
-  </script>
-</body>
-</html>
